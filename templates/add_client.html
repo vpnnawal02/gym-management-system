@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Client</title>
+    <link rel="stylesheet" href="/static/css/add_client.css">
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar">
+    <h2>🏋️ Add New Member</h2>
+    <div class="nav-links">
+      <a href="{{ url_for('dashboard') }}" class="btn">Back to Dashboard</a>
+      <a href="{{ url_for('logout') }}" class="btn logout">Logout</a>
+    </div>
+  </nav>
+
+  <!-- Form Section -->
+  <div class="form-container">
+    <h3>Add New Member</h3>
+    <form method="post" class="card">
+      <label>Name</label>
+      <input type="text" name="name" required>
+
+      <label>Email</label>
+      <input type="text" name="email" required>
+
+      <label>Phone</label>
+      <input type="text" name="phone" required>
+
+      <label>Membership Duration (days)</label>
+      <input type="number" name="membership_days" min="1" required>
+
+      <button type="submit" class="submit-btn">Add Member</button>
+    </form>
+  </div>
+</body>
+</html>
+

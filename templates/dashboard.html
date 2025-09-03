@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gym Dashboard</title>
+  <link rel="stylesheet" href="/static/css/dashboard.css">
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar">
+    <h2>GYMSHALA Client Dashboard</h2>
+    <div class="nav-links">
+      <a href="{{ url_for('add_client') }}" class="btn">Add New Client</a>
+      <a href="{{ url_for('logout') }}" class="btn logout">Logout</a>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <div class="container">
+    <h3>Client List</h3>
+    <!-- Search Bar -->
+    <div class="search-bar">
+      <input
+        type="text"
+        id="clientSearch"
+        class="search-input"
+        placeholder="Search by name or phone…"
+        aria-label="Search clients by name or phone">
+    </div>
+    <div class="table-controls" style="display:flex;justify-content:space-between;align-items:center;gap:1rem;margin-top:.5rem;">
+      <div id="expiredSummary" class="muted"></div>
+      <label style="display:flex;align-items:center;gap:.5rem;cursor:pointer;">
+        <input type="checkbox" id="toggleExpiredOnly">
+        <span>Show expired only</span>
+      </label>
+    </div>
+    <div class="table-wrapper">
+      <table aria-label="Clients table">
+        <thead>
+          <tr>
+            <th scope="col">ID</th>
+            <th scope="col">Name</th>
+            <th scope="col">Email</th>
+            <th scope="col">Phone</th>
+            <th scope="col">Join Date</th>
+            <th scope="col">Expiry Date</th>
+            <th scope="col">Actions</th>
+          </tr>
+        </thead>
+        <tbody id="clientTable">
+          {% for c in clients %}
+          <tr>
+            <td data-label="ID">{{ c.id }}</td>
+            <td data-label="Name">{{ c.name }}</td>
+            <td data-label="Email">{{ c.email }}</td>
+            <td data-label="Phone">{{ c.phone }}</td>
+            <td data-label="Join Date">{{ c.join_date }}</td>
+            <td data-label="Expiry Date">{{ c.expiry_date }}</td>
+            <td data-label="Actions">
+              <button class="btn-remove" onclick="removeClient('{{ c.id }}', this)">Remove</button>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Renew Modal -->
+  <div id="renewModal" class="modal-bg" style="display:none;">
+    <div class="modal">
+      <h3>Renew Membership</h3>
+      <form id="renewForm">
+        <input type="hidden" name="member_id" id="renewMemberId">
+        <label>New Expiry Date:</label>
+        <input type="date" name="new_expiry" id="newExpiryDate" required>
+        <button type="submit" class="btn">Confirm Renewal</button>
+        <button type="button" class="btn btn-secondary" onclick="closeRenewModal()">Cancel</button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+// Client-side search filter: by name or phone
+const searchInput = document.getElementById('clientSearch');
+const tbody = document.getElementById('clientTable');
+searchInput.addEventListener('input', function () {
+  const q = this.value.trim().toLowerCase();
+  const rows = tbody.querySelectorAll('tr');
+  rows.forEach(row => {
+    const name = row.children[1]?.textContent.toLowerCase() || '';
+    const phone = row.children[3]?.textContent.toLowerCase() || '';
+    row.style.display = (name.includes(q) || phone.includes(q)) ? '' : 'none';
+  });
+});
+
+// Expired detection + Renew and Remove buttons
+(function() {
+  if (!tbody) return;
+  const rows = Array.from(tbody.querySelectorAll('tr'));
+  const today = new Date();
+  today.setHours(0,0,0,0);
+  let expiredCount = 0;
+  const rowExpiredClass = 'row-expired';
+  const badgeClass = 'badge-expired';
+
+  function parseDate(raw) {
+    if (!raw) return null;
+    const s = raw.trim();
+    if (/^\d{4}-\d{2}-\d{2}$/.test(s)) {
+      return new Date(s + 'T00:00:00');
+    }
+    if (/^\d{2}\/\d{2}\/\d{4}$/.test(s)) {
+      const [a, b, c] = s.split('/').map(Number);
+      if (a > 12) return new Date(c, b - 1, a);
+      if (b > 12) return new Date(c, a - 1, b);
+      return new Date(c, b - 1, a);
+    }
+    const t = Date.parse(s);
+    if (!isNaN(t)) return new Date(t);
+    return null;
+  }
+
+  rows.forEach(row => {
+    const expiryCell = row.children[5];
+    const actionsCell = row.children[6];
+    if (!expiryCell) return;
+
+    // Extract expiry date text only (avoid badge text)
+    const raw = (expiryCell.textContent || '').trim();
+    const dateText = raw.split('\n')[0].trim();
+
+    const exp = parseDate(dateText);
+    if (!exp) return;
+    exp.setHours(0,0,0,0);
+
+    if (exp <= today) {
+      row.classList.add(rowExpiredClass);
+      expiredCount++;
+
+      // Add expired badge if missing
+      if (!expiryCell.querySelector('.' + badgeClass)) {
+        const wrapper = document.createElement('div');
+        wrapper.style.display = 'flex';
+        wrapper.style.alignItems = 'center';
+        wrapper.style.gap = '8px';
+        wrapper.style.flexWrap = 'wrap';
+
+        const dateSpan = document.createElement('span');
+        dateSpan.textContent = dateText;
+
+        const badge = document.createElement('span');
+        badge.className = badgeClass;
+        badge.textContent = 'Expired';
+
+        wrapper.appendChild(dateSpan);
+        wrapper.appendChild(badge);
+
+        expiryCell.textContent = '';
+        expiryCell.appendChild(wrapper);
+      }
+      // Inside the expired check, after adding badge, renew and remove buttons
+
+if (actionsCell && !actionsCell.querySelector('.btn-whatsapp')) {
+  const waLink = document.createElement('a');
+  waLink.className = 'btn-whatsapp';
+  waLink.textContent = 'Send WhatsApp';
+  waLink.target = '_blank';
+  waLink.rel = 'noopener noreferrer';
+
+  // Get phone and name from row columns
+  const phoneRaw = row.children[3].textContent.trim(); // Phone column
+  const nameRaw = row.children[1].textContent.trim();  // Name column
+
+  // Format message (URL encoded)
+  const prefilledMsg = encodeURIComponent(`Hello *${nameRaw}*,\nWe hope you've been enjoying your fitness journey with us at *GymShala*. This is a friendly reminder that your gym membership has expired.\nYou can renew directly at the front desk or contact us at *8287871015* for assistance.\nStay consistent, stay strong, and let’s keep working towards your fitness goals together!\nBest regards,\nGymShala 🏋️`);
+
+  // Clean phone number: Remove any non-digit characters
+  const phoneNumber = phoneRaw.replace(/\D/g, '');
+
+  // Set WhatsApp link URL
+  waLink.href = `https://wa.me/${phoneNumber}?text=${prefilledMsg}`;
+
+  // Style the button similarly to others
+  waLink.style.marginLeft = '5px';
+  waLink.style.backgroundColor = '#25D366'; // WhatsApp green
+  waLink.style.color = '#fff';
+  waLink.style.padding = '6px 12px';
+  waLink.style.borderRadius = '6px';
+  waLink.style.textDecoration = 'none';
+  waLink.style.fontSize = '0.9rem';
+  waLink.style.display = 'inline-block';
+
+  actionsCell.appendChild(waLink);
+}
+      // Add Renew button if missing
+      if (actionsCell && !actionsCell.querySelector('.btn-renew')) {
+        const renewBtn = document.createElement('button');
+        renewBtn.className = 'btn-renew';
+        renewBtn.textContent = 'Renew';
+        renewBtn.onclick = function () {
+          openRenewModal(row, row.children[0].textContent.trim());
+        };
+        actionsCell.appendChild(renewBtn);
+      }
+
+      // Add Remove button if missing
+      if (actionsCell && !actionsCell.querySelector('.btn-remove')) {
+        const removeBtn = document.createElement('button');
+        removeBtn.className = 'btn-remove';
+        removeBtn.textContent = 'Remove';
+        removeBtn.onclick = function() {
+          removeClient(row.children[0].textContent.trim(), this);
+        };
+        actionsCell.appendChild(removeBtn);
+      }
+    }
+  });
+
+  
+
+  // Update expired summary text
+  const summary = document.getElementById('expiredSummary');
+  if (summary) {
+    summary.textContent = expiredCount > 0
+      ? `${expiredCount} membership${expiredCount === 1 ? '' : 's'} expired`
+      : 'No expired memberships';
+  }
+
+  // Toggle to show only expired rows
+  const toggle = document.getElementById('toggleExpiredOnly');
+  if (toggle) {
+    toggle.addEventListener('change', function() {
+      const only = this.checked;
+      rows.forEach(row => {
+        const isExpired = row.classList.contains(rowExpiredClass);
+        if (only) {
+          row.style.display = isExpired ? '' : 'none';
+        } else {
+          // Respect search input when toggle off
+          const q = searchInput.value.trim().toLowerCase();
+          const name = row.children[1]?.textContent.toLowerCase() || '';
+          const phone = row.children[3]?.textContent.toLowerCase() || '';
+          row.style.display = (name.includes(q) || phone.includes(q)) ? '' : 'none';
+        }
+      });
+    });
+  }
+})();
+
+// Modal open/close for renewal
+function openRenewModal(row, memberId) {
+  document.getElementById('renewModal').style.display = 'flex';
+  document.getElementById('renewMemberId').value = memberId;
+  document.getElementById('newExpiryDate').value = '';
+}
+function closeRenewModal() {
+  document.getElementById('renewModal').style.display = 'none';
+}
+document.getElementById('renewForm').onsubmit = function(e) {
+  e.preventDefault();
+  const memberId = document.getElementById('renewMemberId').value;
+  const newDate = document.getElementById('newExpiryDate').value;
+  if (!memberId || !newDate) return;
+  fetch('/renew_membership', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ member_id: memberId, new_expiry: newDate })
+  })
+  .then(r => r.json())
+  .then(data => {
+    if (data.success) {
+      alert('Membership renewed!');
+      window.location.reload();
+    } else {
+      alert(data.message || 'Renewal failed.');
+    }
+    closeRenewModal();
+  })
+  .catch(() => {
+    alert('Error renewing membership.');
+    closeRenewModal();
+  });
+};
+
+// Remove client function with confirmation and backend call
+function removeClient(clientId, btn) {
+  if (!confirm('Are you sure you want to remove this client? This action cannot be undone.')) return;
+  fetch('/remove_client', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ client_id: clientId })
+  })
+  .then(resp => resp.json())
+  .then(data => {
+    if (data.success) {
+      alert('Client removed successfully.');
+      const row = btn.closest('tr');
+      if (row) row.remove();
+    } else {
+      alert(data.message || 'Failed to remove client.');
+    }
+  })
+  .catch(() => alert('Error removing client.'));
+}
+
+  </script>
+</body>
+</html>
