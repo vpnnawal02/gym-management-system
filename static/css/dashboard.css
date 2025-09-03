@@ -437,10 +437,25 @@ tbody tr:active {
     thead th {
         padding: 5px 7px;
     }
-}
 
-/* Subtle focus-visible outline for keyboard users */
-:focus-visible {
-    outline: 2px solid var(--ring-strong);
-    outline-offset: 2px;
-}
+    .btn-remove {
+        padding: 3px 6px;
+        font-size: 0.9rem;
+    }
+
+    .btn-whatsapp {
+        padding: 0;
+        font-size: 0.9rem;
+        text-align: center;
+    }
+
+    .btn-renew {
+        padding: 6px 10px;
+        font-size: 0.9rem;
+    }
+
+    /* Subtle focus-visible outline for keyboard users */
+    :focus-visible {
+        outline: 2px solid var(--ring-strong);
+        outline-offset: 2px;
+    }
