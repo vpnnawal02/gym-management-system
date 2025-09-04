@@ -368,13 +368,14 @@ tbody tr:active {
 @media (max-width: 768px) {
     .navbar {
         flex-direction: column;
-        align-items: flex-start;
+        align-items: center;
         gap: 10px;
     }
 
     .nav-links {
         width: 100%;
         display: flex;
+        justify-content: center;
         gap: 10px;
         flex-wrap: wrap;
     }
@@ -459,3 +460,4 @@ tbody tr:active {
         outline: 2px solid var(--ring-strong);
         outline-offset: 2px;
     }
+}

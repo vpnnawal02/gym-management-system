@@ -1,1 +1,4 @@
-{"admin_id": "admin", "admin_password": "admin123"}
+{
+    "admin_id": "admin",
+    "admin_password": "admin123"
+}

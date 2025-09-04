@@ -10,9 +10,22 @@ body {
     background: linear-gradient(135deg, #141e30, #243b55);
     min-height: 100vh;
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
     padding: 20px;
+}
+
+.salutation {
+    margin-top: 15px;
+    font-size: 0.9rem;
+    color: #ccc;
+}
+
+.salutation a {
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
 }
 
 /* Wrapper for heading + form */
