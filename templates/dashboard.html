@@ -5,7 +5,472 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Gym Dashboard</title>
-  <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+  {% comment %} <link rel="stylesheet" href="{% static 'css/dashboard.css' %}"> {% endcomment %}
+  <style>
+    /* Reset */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+:root {
+    --bg-grad-start: #141e30;
+    --bg-grad-end: #243b55;
+    --text: #eef2ff;
+    --muted: #c7d2fe;
+    --accent: #4caf50;
+    --accent-hover: #45a049;
+    --danger: #e74c3c;
+    --danger-hover: #c0392b;
+    --glass-bg: rgba(255, 255, 255, 0.08);
+    --glass-stroke: rgba(255, 255, 255, 0.18);
+    --glass-head: rgba(255, 255, 255, 0.14);
+    --shadow-1: 0 8px 24px rgba(0, 0, 0, 0.35);
+    --radius: 12px;
+    --radius-sm: 8px;
+    --ring: rgba(99, 102, 241, 0.25);
+    --ring-strong: rgba(99, 102, 241, 0.4);
+}
+
+html,
+body {
+    height: 100%;
+    font-family: "Poppins", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+}
+
+body {
+    min-height: 100vh;
+    color: var(--text);
+    background: linear-gradient(135deg, var(--bg-grad-start), var(--bg-grad-end)) fixed;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* Navbar */
+.navbar {
+    background: rgba(0, 0, 0, 0.35);
+    padding: 16px 28px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--glass-stroke);
+    backdrop-filter: saturate(120%) blur(10px);
+    -webkit-backdrop-filter: saturate(120%) blur(10px);
+    box-shadow: var(--shadow-1);
+}
+
+.navbar h2 {
+    font-size: 1.35rem;
+    letter-spacing: 0.2px;
+    color: var(--text);
+}
+
+.nav-links a {
+    text-decoration: none;
+    padding: 10px 14px;
+    border-radius: var(--radius-sm);
+    font-size: 0.95rem;
+    transition: transform 0.15s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+    color: #fff;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn {
+    background: var(--accent);
+    border: 1px solid transparent;
+    box-shadow: 0 6px 18px rgba(76, 175, 80, 0.25);
+}
+
+.btn:hover {
+    background: var(--accent-hover);
+    transform: translateY(-1px);
+    box-shadow: 0 10px 24px rgba(76, 175, 80, 0.3);
+}
+
+.logout {
+    background: var(--danger);
+    box-shadow: 0 6px 18px rgba(231, 76, 60, 0.25);
+}
+
+.logout:hover {
+    background: var(--danger-hover);
+    transform: translateY(-1px);
+    box-shadow: 0 10px 24px rgba(231, 76, 60, 0.32);
+}
+
+/* Container */
+.container {
+    padding: 28px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.container h3 {
+    margin-bottom: 12px;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--text);
+    letter-spacing: 0.2px;
+}
+
+/* Search bar (reusable) */
+.search-bar {
+    margin: 12px 0 6px;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.search-input {
+    width: 280px;
+    max-width: 100%;
+    padding: 10px 12px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--glass-stroke);
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--text);
+    outline: none;
+    transition: border-color .2s, box-shadow .2s, background-color .2s;
+}
+
+.search-input::placeholder {
+    color: rgba(255, 255, 255, 0.65);
+}
+
+.search-input:focus {
+    border-color: var(--ring);
+    box-shadow: 0 0 0 3px var(--ring);
+    background: rgba(255, 255, 255, 0.12);
+}
+
+/* Table wrapper */
+.table-wrapper {
+    margin-top: 14px;
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-stroke);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-1);
+    overflow: hidden;
+    backdrop-filter: blur(8px) saturate(115%);
+    -webkit-backdrop-filter: blur(8px) saturate(115%);
+}
+
+/* Table (Desktop) */
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+thead {
+    background: var(--glass-head);
+}
+
+thead th {
+    padding: 14px 16px;
+    text-align: left;
+    font-weight: 600;
+    color: #f8fafc;
+    font-size: 0.92rem;
+    letter-spacing: 0.3px;
+    border-bottom: 1px solid var(--glass-stroke);
+}
+
+tbody td {
+    padding: 13px 16px;
+    border-top: 1px solid rgba(255, 255, 255, 0.12);
+    color: #e5e7eb;
+    font-size: 0.95rem;
+}
+
+tbody tr {
+    transition: background-color 0.2s ease, transform 0.15s ease;
+}
+
+tbody tr:hover {
+    background: rgba(255, 255, 255, 0.09);
+}
+
+tbody tr:active {
+    transform: scale(0.999);
+}
+
+.badge-expired {
+    display: inline-block;
+    font-size: 0.75rem;
+    line-height: 1;
+    padding: 6px 10px;
+    border-radius: 999px;
+    color: #fff;
+    background: #ef4444;
+    border: 1px solid rgba(239, 68, 68, 0.35);
+    box-shadow: 0 8px 20px rgba(239, 68, 68, 0.25);
+    letter-spacing: .2px;
+}
+
+.row-expired td {
+    background: rgba(239, 68, 68, 0.08) !important;
+}
+
+.row-expired:hover td {
+    background: rgba(239, 68, 68, 0.12) !important;
+}
+
+.btn-renew {
+    background: #6366f1;
+    color: #fff;
+    border: none;
+    padding: 7px 16px;
+    border-radius: 7px;
+    margin-left: 5px;
+    cursor: pointer;
+    font-size: 0.97rem;
+    transition: background 0.18s;
+}
+
+.btn-renew:hover {
+    background: #4f46e5;
+}
+
+/* Modal background */
+.modal-bg {
+    position: fixed;
+    inset: 0;
+    background: rgba(20, 30, 48, 0.65);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+}
+
+/* Modal card */
+.modal {
+    background: rgba(28, 44, 72, 0.93);
+    border-radius: 16px;
+    box-shadow: 0 8px 36px 0 rgba(12, 20, 34, 0.67), 0 1.5px 8px 0 rgba(99, 102, 241, .08);
+    padding: 2.2rem 2.5rem 2rem 2.5rem;
+    min-width: 320px;
+    color: #fff;
+    backdrop-filter: blur(12px) saturate(1.1);
+    -webkit-backdrop-filter: blur(12px) saturate(1.1);
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    position: relative;
+    animation: modalpop 0.22s cubic-bezier(.57, 1.65, .71, .93);
+}
+
+@keyframes modalpop {
+    from {
+        transform: scale(.93) translateY(40px);
+        opacity: 0;
+    }
+
+    to {
+        transform: scale(1) translateY(0);
+        opacity: 1;
+    }
+}
+
+/* Modal title */
+.modal h3 {
+    margin-top: 0;
+    margin-bottom: 1rem;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    font-size: 1.22rem;
+    color: #ffe082;
+    text-shadow: 1px 2px 8px #0006;
+}
+
+/* Label */
+.modal label {
+    display: block;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+    color: #c7d2fe;
+}
+
+/* Input */
+.modal input[type="date"] {
+    padding: 0.58em 1em;
+    border-radius: 7px;
+    border: 1.5px solid #3c4d69;
+    background: rgba(40, 51, 68, 0.62);
+    color: #fff;
+    margin-bottom: 1.2rem;
+    font-size: 1em;
+    font-family: inherit;
+    transition: border-color 0.22s, background 0.18s;
+    box-shadow: 0 1px 2px 0 #0003;
+}
+
+.modal input[type="date"]:focus {
+    border-color: #8ecae6;
+    background: #253050;
+    outline: none;
+}
+
+/* Button styles */
+.modal button {
+    padding: 0.55em 1.4em;
+    font-size: 1em;
+    font-weight: 600;
+    border-radius: 7px;
+    border: none;
+    margin-right: 6px;
+    margin-bottom: 0.1em;
+    cursor: pointer;
+    transition: background 0.18s, box-shadow 0.15s;
+}
+
+.modal .btn {
+    background: #4caf50;
+    color: #fff;
+    box-shadow: 0 2px 8px 0 #2e4c2b22;
+}
+
+.modal .btn:hover {
+    background: #388e3c;
+}
+
+.modal .btn-secondary {
+    background: #374151;
+    color: #c7d2fe;
+    border: none;
+}
+
+.modal .btn-secondary:hover {
+    background: #222b3a;
+    color: #fff;
+}
+
+.btn-remove {
+    background: #e53e3e;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: background 0.2s ease;
+}
+
+.btn-remove:hover {
+    background: #9b2c2c;
+}
+
+
+/* Compact spacing on very large tables */
+@media (min-width: 1280px) {
+
+    thead th,
+    tbody td {
+        padding: 12px 16px;
+    }
+}
+
+/* Mobile: Convert table to cards */
+@media (max-width: 768px) {
+    .navbar {
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .nav-links {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .table-wrapper {
+        border-radius: var(--radius);
+        overflow: hidden;
+    }
+
+    table,
+    thead,
+    tbody,
+    th,
+    td,
+    tr {
+        display: block;
+        width: 100%;
+    }
+
+    thead {
+        display: none;
+    }
+
+    tbody tr {
+        margin: 12px 0;
+        background: var(--glass-bg);
+        border: 1px solid var(--glass-stroke);
+        border-radius: var(--radius);
+        padding: 12px;
+        box-shadow: var(--shadow-1);
+    }
+
+    tbody td {
+        border: none;
+        display: flex;
+        justify-content: space-between;
+        padding: 10px 4px;
+        font-size: 0.95rem;
+        color: #e5e7eb;
+    }
+
+    tbody td::before {
+        content: attr(data-label);
+        font-weight: 600;
+        color: #fff;
+        margin-right: 12px;
+    }
+}
+
+/* Ultra-small devices */
+@media (max-width: 420px) {
+    .search-input {
+        width: 100%;
+    }
+
+    .navbar h2 {
+        font-size: 1.15rem;
+    }
+
+    thead th {
+        padding: 5px 7px;
+    }
+
+    .btn-remove {
+        padding: 3px 6px;
+        font-size: 0.9rem;
+    }
+
+    .btn-whatsapp {
+        padding: 0;
+        font-size: 0.9rem;
+        text-align: center;
+    }
+
+    .btn-renew {
+        padding: 6px 10px;
+        font-size: 0.9rem;
+    }
+
+    /* Subtle focus-visible outline for keyboard users */
+    :focus-visible {
+        outline: 2px solid var(--ring-strong);
+        outline-offset: 2px;
+    }
+}
+  </style>
 </head>
 <body>
 
