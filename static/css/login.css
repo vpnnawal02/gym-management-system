@@ -3,124 +3,86 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: "Poppins", sans-serif;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
 }
 
+/* Page background */
 body {
-    background: linear-gradient(135deg, #141e30, #243b55);
     min-height: 100vh;
+    background: #f4f6f8;
     display: flex;
-    flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 20px;
+    padding: 1rem;
 }
 
-.salutation {
-    margin-top: 15px;
-    font-size: 0.9rem;
-    color: #ccc;
-}
-
-.salutation a {
-    color: white;
-    text-decoration: none;
-    font-weight: bold;
-}
-
-/* Wrapper for heading + form */
-.container {
+/* Login container */
+form {
+    background: #ffffff;
     width: 100%;
-    max-width: 400px;
-    background: rgba(255, 255, 255, 0.08);
-    padding: 30px 25px;
-    border-radius: 15px;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
-    backdrop-filter: blur(10px);
-    text-align: center;
+    max-width: 360px;
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
 }
 
 /* Heading */
-.container h2 {
-    margin-bottom: 20px;
-    font-size: 1.8rem;
-    font-weight: 600;
-    color: #f4f4f4;
+h2 {
+    text-align: center;
+    margin-bottom: 1.5rem;
+    color: #222;
+    font-size: 1.6rem;
 }
 
-/* Flash messages */
-ul {
-    margin-bottom: 15px;
-    padding-left: 0;
-    list-style: none;
-}
-
-ul li {
+/* Error messages */
+p {
+    margin-bottom: 1rem;
     font-size: 0.9rem;
-    color: #ff6b6b;
-    text-align: left;
-}
-
-/* Labels */
-label {
-    display: block;
-    margin-bottom: 8px;
-    font-weight: 500;
-    font-size: 0.95rem;
-    color: #ddd;
-    text-align: left;
+    text-align: center;
 }
 
 /* Inputs */
-input[type="text"],
-input[type="password"] {
+input {
     width: 100%;
-    padding: 12px 15px;
-    margin-bottom: 18px;
-    border: none;
-    border-radius: 8px;
-    font-size: 1rem;
-    outline: none;
-    background: rgba(255, 255, 255, 0.15);
-    color: #fff;
-    transition: 0.3s ease;
+    padding: 0.75rem;
+    margin-bottom: 1rem;
+    border-radius: 6px;
+    border: 1px solid #dcdcdc;
+    font-size: 0.95rem;
+    transition: border-color 0.2s ease;
 }
 
 input:focus {
-    background: rgba(255, 255, 255, 0.25);
-    box-shadow: 0 0 0 2px #4CAF50;
+    outline: none;
+    border-color: #4f46e5;
+    /* subtle blue accent */
 }
 
 /* Button */
 button {
     width: 100%;
-    padding: 12px;
-    background: #4CAF50;
+    padding: 0.75rem;
     border: none;
-    border-radius: 8px;
+    border-radius: 6px;
+    background: #4f46e5;
+    color: #ffffff;
     font-size: 1rem;
-    font-weight: 600;
+    font-weight: 500;
     cursor: pointer;
-    transition: 0.3s ease;
-    color: #fff;
+    transition: background 0.2s ease;
 }
 
 button:hover {
-    background: #45a049;
+    background: #4338ca;
 }
 
-/* Responsive */
-@media (max-width: 500px) {
-    .container {
-        padding: 25px 20px;
+/* Mobile spacing improvement */
+@media (max-width: 480px) {
+    form {
+        padding: 1.5rem;
     }
 
-    .container h2 {
-        font-size: 1.5rem;
-    }
-
-    button {
-        font-size: 0.95rem;
-        padding: 10px;
+    h2 {
+        font-size: 1.4rem;
     }
 }

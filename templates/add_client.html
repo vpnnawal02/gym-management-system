@@ -1,25 +1,39 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Add Client</title>
-    <link rel="stylesheet" href="/static/css/add_client.css">
+  <link rel="stylesheet" href="{% static 'css/add_client.css' %}">
+
+  <style>
+    .navbar{
+      align-items:center;
+    }
+    .nav-links{
+      justify-content:center;
+    }
+  </style>
+
 </head>
 <body>
+
   <!-- Navbar -->
-  <nav class="navbar">
-    <h2>🏋️ Add New Member</h2>
+  <nav>
+    <div class="navbar">
+    <h2>Add New Member</h2>
     <div class="nav-links">
-      <a href="{{ url_for('dashboard') }}" class="btn">Back to Dashboard</a>
-      <a href="{{ url_for('logout') }}" class="btn logout">Logout</a>
+      <a href="{% url 'dashboard' %}" class="btn">Back to Dashboard</a>
+      <a href="{% url 'logout' %}" class="btn logout">Logout</a>
     </div>
   </nav>
 
-  <!-- Form Section -->
+  <!-- Add Client Form -->
   <div class="form-container">
-    <h3>Add New Member</h3>
-    <form method="post" class="card">
+
+      <form method="post" class="card">
+      {% csrf_token %}
       <label>Name</label>
       <input type="text" name="name" required>
 
@@ -30,11 +44,11 @@
       <input type="text" name="phone" required>
 
       <label>Membership Duration (days)</label>
-      <input type="number" name="membership_days" min="1" required>
+      <input type="number" name="membership_days" min="0" required>
 
       <button type="submit" class="submit-btn">Add Member</button>
     </form>
   </div>
+
 </body>
 </html>
-

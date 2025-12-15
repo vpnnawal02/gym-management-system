@@ -1,24 +1,27 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Gym Dashboard</title>
-  <link rel="stylesheet" href="/static/css/dashboard.css">
+  <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
 </head>
 <body>
+
   <!-- Navbar -->
   <nav class="navbar">
     <h2>GYMSHALA Client Dashboard</h2>
     <div class="nav-links">
-      <a href="{{ url_for('add_client') }}" class="btn">Add New Client</a>
-      <a href="{{ url_for('logout') }}" class="btn logout">Logout</a>
+      <a href="{% url 'add_client' %}" class="btn">Add New Client</a>
+      <a href="{% url 'logout' %}" class="btn logout">Logout</a>
     </div>
   </nav>
 
   <!-- Main Content -->
   <div class="container">
     <h3>Client List</h3>
+
     <!-- Search Bar -->
     <div class="search-bar">
       <input
@@ -28,6 +31,7 @@
         placeholder="Search by name or phone…"
         aria-label="Search clients by name or phone">
     </div>
+
     <div class="table-controls" style="display:flex;justify-content:space-between;align-items:center;gap:1rem;margin-top:.5rem;">
       <div id="expiredSummary" class="muted"></div>
       <label style="display:flex;align-items:center;gap:.5rem;cursor:pointer;">
@@ -35,31 +39,32 @@
         <span>Show expired only</span>
       </label>
     </div>
+
     <div class="table-wrapper">
       <table aria-label="Clients table">
         <thead>
           <tr>
-            <th scope="col">ID</th>
-            <th scope="col">Name</th>
-            <th scope="col">Email</th>
-            <th scope="col">Phone</th>
-            <th scope="col">Join Date</th>
-            <th scope="col">Expiry Date</th>
-            <th scope="col">Actions</th>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Phone</th>
+            <th>Join Date</th>
+            <th>Expiry Date</th>
+            <th>Actions</th>
           </tr>
         </thead>
         <tbody id="clientTable">
           {% for c in clients %}
           <tr>
             <td data-label="ID">{{ c.id }}</td>
-            <td data-label="Name">{{ c.name }}</td>
-            <td data-label="Email">{{ c.email }}</td>
-            <td data-label="Phone">{{ c.phone }}</td>
-            <td data-label="Join Date">{{ c.join_date }}</td>
-            <td data-label="Expiry Date">{{ c.expiry_date }}</td>
-            <td data-label="Actions">
-              <button class="btn-remove" onclick="removeClient('{{ c.id }}', this)">Remove</button>
-            </td>
+<td data-label="Name">{{ c.name }}</td>
+<td data-label="Email">{{ c.email }}</td>
+<td data-label="Phone">{{ c.phone }}</td>
+<td data-label="Join Date">{{ c.join_date }}</td>
+<td data-label="Expiry Date">{{ c.expiry_date }}</td>
+<td data-label="Actions">
+  <button class="btn-remove" onclick="removeClient('{{ c.id }}', this)">Remove</button>
+</td>
           </tr>
           {% endfor %}
         </tbody>
@@ -72,17 +77,18 @@
     <div class="modal">
       <h3>Renew Membership</h3>
       <form id="renewForm">
-        <input type="hidden" name="member_id" id="renewMemberId">
+        <input type="hidden" id="renewMemberId">
         <label>New Expiry Date:</label>
-        <input type="date" name="new_expiry" id="newExpiryDate" required>
+        <input type="date" id="newExpiryDate" required>
         <button type="submit" class="btn">Confirm Renewal</button>
         <button type="button" class="btn btn-secondary" onclick="closeRenewModal()">Cancel</button>
       </form>
     </div>
   </div>
 
+  <!-- ALL YOUR JS (UNCHANGED) -->
   <script>
-// Client-side search filter: by name or phone
+    // Client-side search filter: by name or phone
 const searchInput = document.getElementById('clientSearch');
 const tbody = document.getElementById('clientTable');
 searchInput.addEventListener('input', function () {
@@ -263,7 +269,7 @@ document.getElementById('renewForm').onsubmit = function(e) {
   const memberId = document.getElementById('renewMemberId').value;
   const newDate = document.getElementById('newExpiryDate').value;
   if (!memberId || !newDate) return;
-  fetch('/renew_membership', {
+  fetch('/renew_membership/', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ member_id: memberId, new_expiry: newDate })
@@ -287,7 +293,7 @@ document.getElementById('renewForm').onsubmit = function(e) {
 // Remove client function with confirmation and backend call
 function removeClient(clientId, btn) {
   if (!confirm('Are you sure you want to remove this client? This action cannot be undone.')) return;
-  fetch('/remove_client', {
+  fetch('/remove_client/', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ client_id: clientId })
@@ -306,5 +312,6 @@ function removeClient(clientId, btn) {
 }
 
   </script>
+
 </body>
 </html>

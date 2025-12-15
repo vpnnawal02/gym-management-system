@@ -1,38 +1,114 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gym Login</title>
-    <link rel="stylesheet" href="/static/css/login.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login</title>
+  <style>
+    /* Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+}
+
+/* Page background */
+body {
+    min-height: 100vh;
+    background: #f4f6f8;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+}
+
+/* Login container */
+form {
+    background: #ffffff;
+    width: 100%;
+    max-width: 360px;
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+}
+
+/* Heading */
+h2 {
+    text-align: center;
+    margin-bottom: 1.5rem;
+    color: #222;
+    font-size: 1.6rem;
+}
+
+/* Error messages */
+p {
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+    text-align: center;
+}
+
+/* Inputs */
+input {
+    width: 100%;
+    padding: 0.75rem;
+    margin-bottom: 1rem;
+    border-radius: 6px;
+    border: 1px solid #dcdcdc;
+    font-size: 0.95rem;
+    transition: border-color 0.2s ease;
+}
+
+input:focus {
+    outline: none;
+    border-color: #4f46e5;
+    /* subtle blue accent */
+}
+
+/* Button */
+button {
+    width: 100%;
+    padding: 0.75rem;
+    border: none;
+    border-radius: 6px;
+    background: #4f46e5;
+    color: #ffffff;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+button:hover {
+    background: #4338ca;
+}
+
+/* Mobile spacing improvement */
+@media (max-width: 480px) {
+    form {
+        padding: 1.5rem;
+    }
+
+    h2 {
+        font-size: 1.4rem;
+    }
+}
+  </style>
 </head>
 <body>
-    
-  <div class="container">
-  <h2>GymShala - Client Management System</h2>
-    {% with messages = get_flashed_messages() %}
-      {% if messages %}
-        <ul>
-          {% for message in messages %}
-            <li>{{ message }}</li>
-          {% endfor %}
-        </ul>
-      {% endif %}
-    {% endwith %}
+  <h2>Admin Login</h2>
 
-    <form method="post">
-      <label>Username:</label>
-      <input type="text" name="username" required>
+  {% for message in messages %}
+    <p style="color:red">{{ message }}</p>
+  {% endfor %}
 
-      <label>Password:</label>
-      <input type="password" name="password" required>
-
-      <button type="submit">Login</button>
-    </form>
-  </div>
-  <div class="salutation">
-  Designed and Developed by <a href="https://www.linkedin.com/in/vipin-nawal02/">VIPIN</a>
-  </div>
-  
+  <form method="post">
+    {% csrf_token %}
+    <input name="username" placeholder="Username" required>
+    <input name="password" type="password" placeholder="Password" required>
+    <button type="submit">Login</button>
+  </form>
 </body>
 </html>
