@@ -76,7 +76,7 @@ if not DATABASE_URL:
 DATABASES = {
     "default": dj_database_url.parse(
         DATABASE_URL,
-        conn_max_age=0,   # IMPORTANT for pooler
+        conn_max_age=0,   # REQUIRED for Supabase pooler
         ssl_require=True,
     )
 }
