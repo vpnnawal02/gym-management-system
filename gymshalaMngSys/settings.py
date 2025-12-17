@@ -71,20 +71,14 @@ WSGI_APPLICATION = 'gymshalaMngSys.wsgi.application'
 DATABASE_URL = os.environ.get("DATABASE_URL")
 
 if not DATABASE_URL:
-    raise ImproperlyConfigured("DATABASE_URL environment variable is not set")
+    raise ImproperlyConfigured("DATABASE_URL not set")
 
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": "postgres",
-        "USER": "postgres",
-        "PASSWORD": "YsyY3TMbkr9E62Xx",
-        "HOST": "db.tzdbkmzlkhbkcqxkdnob.supabase.co",
-        "PORT": "5432",
-        "OPTIONS": {
-            "sslmode": "require",
-        },
-    }
+    "default": dj_database_url.parse(
+        DATABASE_URL,
+        conn_max_age=0,   # IMPORTANT for pooler
+        ssl_require=True,
+    )
 }
 
 
