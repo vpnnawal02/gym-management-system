@@ -1,7 +1,8 @@
 services:
   - type: web
-    name: gym-management-system
+    name: gymshala
     env: python
+    plan: free
     buildCommand: |
       pip install -r requirements.txt
       python manage.py collectstatic --noinput
