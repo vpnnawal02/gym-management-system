@@ -74,12 +74,20 @@ if not DATABASE_URL:
     raise ImproperlyConfigured("DATABASE_URL environment variable is not set")
 
 DATABASES = {
-    "default": dj_database_url.parse(
-        os.environ.get("DATABASE_URL"),
-        conn_max_age=600,
-        ssl_require=True,
-    )
+    "default": {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": "postgres",
+        "USER": "postgres",
+        "PASSWORD": "YsyY3TMbkr9E62Xx",
+        "HOST": "db.tzdbkmzlkhbkcqxkdnob.supabase.co",
+        "PORT": "5432",
+        "OPTIONS": {
+            "sslmode": "require",
+        },
+    }
 }
+
+
 
 # Password validation
 # https://docs.djangoproject.com/en/6.0/ref/settings/#auth-password-validators
